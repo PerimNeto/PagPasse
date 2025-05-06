@@ -7,13 +7,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.*;
 
-@Testcontainers
-public class CartaoTransporteApiTest {
+class CartaoTransporteApiTest {
 
     @Container
     static GenericContainer<?> app = new GenericContainer<>("eclipse-temurin:21-jdk-jammy")
@@ -21,9 +19,8 @@ public class CartaoTransporteApiTest {
 
     @BeforeAll
     static void setup() {
-        Integer mappedPort = app.getMappedPort(8080);
         RestAssured.baseURI = "http://localhost";
-        RestAssured.port = mappedPort;
+        RestAssured.port = 8080;
     }
 
     @Test
