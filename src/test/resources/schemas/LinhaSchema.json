@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Linha",
+  "type": "object",
+  "properties": {
+    "id": { "type": "integer" },
+    "nomeLinha": { "type": "string" },
+    "rota": { "type": "string" },
+    "tempoEstimado": { "type": "string", "format": "date-time" },
+    "localizacaoAtual": { "type": "string" },
+    "dataUltimaAtualizacao": { "type": "string", "format": "date-time" },
+    "horarioInicio": { "type": "string", "format": "date-time" },
+    "horarioFim": { "type": "string", "format": "date-time" }
+  },
+  "required": ["id", "nomeLinha", "rota", "tempoEstimado", "localizacaoAtual", "dataUltimaAtualizacao", "horarioInicio", "horarioFim"]
+}

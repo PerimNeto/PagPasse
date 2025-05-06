@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CartaoTransporte",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "numeroCartao": {
+      "type": "integer"
+    },
+    "tipoCartao": {
+      "type": "string"
+    },
+    "saldoCartao": {
+      "type": "number"
+    },
+    "dataEmissao": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": ["id", "numeroCartao", "tipoCartao", "saldoCartao", "dataEmissao"]
+}

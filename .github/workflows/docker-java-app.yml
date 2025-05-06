@@ -1,0 +1,70 @@
+name: Build and Deploy Java App
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+
+env:
+  IMAGE_NAME: PagPasse  # ← Mesmo nome do <artifactId>
+  REGISTRY_NAME: registropagpasse.azurecr.io
+  DOCKERFILE_PATH: ./Dockerfile
+  APP_PORT: 8080
+  HEALTH_CHECK_ENDPOINT: /api/public/hello
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    services:
+      docker:
+        image: docker:24.0
+        options: --privileged
+      app:
+        image: ${{ env.REGISTRY_NAME }}/${{ env.IMAGE_NAME }}:latest
+        ports:
+          - ${{ env.APP_PORT }}:${{ env.APP_PORT }}
+        options: >-
+          --health-cmd "curl -f http://localhost:${{ env.APP_PORT }}${{ env.HEALTH_CHECK_ENDPOINT }} || exit 1"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Start Docker
+        run: |
+          sudo service docker start
+          docker --version
+
+      - name: Log in to Azure Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY_NAME }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Pull application image
+        run: docker pull ${{ env.REGISTRY_NAME }}/${{ env.IMAGE_NAME }}:latest
+
+      - name: Wait for application to start
+        run: |
+          echo "Waiting for app to be healthy..."
+          timeout 180s bash -c 'while [[ "$(docker inspect -f {{.State.Health.Status}} app)" != "healthy" ]]; do
+            sleep 10;
+          done'
+          echo "App is healthy!"
+
+      - name: Run tests
+        run: |
+          mvn test -Dapp.url=http://localhost:${{ env.APP_PORT }}
+        env:
+          WAIT_FOR_IT_TIMEOUT: 180

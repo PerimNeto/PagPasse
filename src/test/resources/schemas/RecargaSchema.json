@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Recarga",
+  "type": "object",
+  "properties": {
+    "id": { "type": "integer" },
+    "valorRecarga": { "type": "number" },
+    "metodoPagamento": { "type": "string" },
+    "dataRecarga": { "type": "string", "format": "date-time" },
+    "status": { "type": "boolean" }
+  },
+  "required": ["id", "valorRecarga", "metodoPagamento", "dataRecarga", "status"]
+}
