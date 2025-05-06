@@ -1,34 +1,35 @@
-# Etapa 1: Build - compila o projeto com Maven usando Java 21
+# Etapa 1: Build (otimizada para cache)
 FROM maven:3.9-eclipse-temurin-21 as builder
 
-# Define o diretório de trabalho dentro do container
 WORKDIR /app
-
-# Copia o arquivo de definição do Maven primeiro (para cache mais eficiente)
 COPY pom.xml .
-
-# Baixa as dependências para acelerar builds futuros
-RUN mvn dependency:go-offline -B
-
-# Agora copia o restante do código
 COPY src ./src
 
-# Compila o projeto e gera o .jar
-RUN mvn clean package -DskipTests
+# Cache eficiente de dependências
+RUN mkdir -p target \
+    && mvn dependency:go-offline -B \
+    && mvn clean package -DskipTests
 
-# --------------------------------------------------------------------
+# --------------------------------------------
 
-# Etapa 2: Runtime - roda a aplicação em uma imagem limpa e leve
-FROM eclipse-temurin:21-jdk-jammy
+# Etapa 2: Runtime (com segurança reforçada)
+FROM eclipse-temurin:21-jre-jammy
 
-# Define o diretório de trabalho
 WORKDIR /app
 
-# Copia o .jar gerado na etapa de build
-COPY --from=builder /app/target/*.jar app.jar
+# Copia o JAR mantendo o nome original (importante para o workflow)
+COPY --from=builder /app/target/PagPasse-*.jar app.jar
 
-# Expõe a porta padrão (8080)
+# Configurações de segurança e performance
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    fontconfig libfreetype6 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Usuário não-root (boa prática de segurança)
+RUN useradd -m appuser && chown -R appuser:appuser /app
+USER appuser
+
 EXPOSE 8080
 
-# Comando para rodar a aplicação
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+# Parâmetros recomendados para apps Java em container
+ENTRYPOINT ["java", "-XX:+UseContainerSupport", "-Dfile.encoding=UTF-8", "-jar", "/app/app.jar"]
