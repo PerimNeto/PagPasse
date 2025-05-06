@@ -141,6 +141,68 @@ A aplicação já está configurada com GitHub Actions para integração contín
 
 Os workflows estão definidos na pasta `.github/workflows/` do repositório.
 
+## 🧪 Testes e Verificação de Qualidade
+
+### Estrutura de Testes
+
+O projeto segue uma abordagem abrangente de testes que inclui:
+
+- Testes Unitários
+- Testes de Integração
+- Testes de API
+- Testes de Performance
+- Testes de Segurança
+
+### Arquivos de Teste
+
+O projeto inclui uma estrutura completa de testes organizada em:
+
+- `src/test/java/`: Contém todos os testes unitários e de integração
+- `src/test/resources/`: Arquivos de configuração e dados de teste
+- `test/docker/`: Arquivos Docker para ambiente de teste
+- `test/scripts/`: Scripts de configuração e automação
+
+### Executando os Testes
+
+#### Testes Unitários e de Integração
+```bash
+./mvnw test
+```
+
+#### Testes de API
+```bash
+./mvnw verify -Papi-tests
+```
+
+#### Testes de Performance
+```bash
+./mvnw verify -Pperformance-tests
+```
+
+### Configuração do Ambiente de Teste
+
+O projeto inclui arquivos de configuração específicos para o ambiente de teste:
+
+- `src/test/resources/application-test.yml`: Configurações específicas para teste
+- `test/docker/Dockerfile.test`: Imagem Docker personalizada para testes
+- `test/docker/docker-compose.test.yml`: Configuração do ambiente de teste com Docker Compose
+
+### Scripts de Teste
+
+Os scripts de teste estão localizados em `test/scripts/` e incluem:
+
+- `setup-test-env.sh`: Configura o ambiente de teste
+- `run-performance-tests.sh`: Executa testes de performance
+- `security-scan.sh`: Realiza varredura de segurança
+
+### Documentação de Testes
+
+Para mais detalhes sobre a estrutura e execução dos testes, consulte:
+
+- [TESTING.md](test/TESTING.md): Guia completo sobre testes
+- [PERFORMANCE.md](test/PERFORMANCE.md): Guia de testes de performance
+- [SECURITY.md](test/SECURITY.md): Guia de testes de segurança
+
 ## 📝 Licença
 
 Este projeto está licenciado sob a [Licença MIT](LICENSE) - veja o arquivo LICENSE para detalhes.
@@ -152,9 +214,10 @@ Para contribuir com o projeto:
 1. Faça um Fork do repositório
 2. Crie uma branch para sua feature (`git checkout -b feature/nova-funcionalidade`)
 3. Implemente suas mudanças e adicione testes quando possível
-4. Commit suas alterações (`git commit -m 'Adiciona nova funcionalidade'`)
-5. Push para a branch (`git push origin feature/nova-funcionalidade`)
-6. Abra um Pull Request
+4. Execute os testes: `./mvnw test`
+5. Commit suas alterações (`git commit -m 'Adiciona nova funcionalidade'`)
+6. Push para a branch (`git push origin feature/nova-funcionalidade`)
+7. Abra um Pull Request
 
 ## 📚 Documentação da API
 
@@ -162,29 +225,6 @@ A documentação da API será disponibilizada através do Swagger UI após a ini
 
 ```
 http://localhost:8080/swagger-ui.html
-```
-
-## 🧪 Testes
-
-Para executar os testes unitários e de integração:
-
-```bash
-./mvnw test
-```
-
-## ⚙️ Configuração do Docker
-
-O projeto inclui:
-
-- Um `Dockerfile` que cria uma imagem baseada em OpenJDK 17
-- Um arquivo `docker-compose.yml` para orquestração de contêineres
-
-Detalhes do `Dockerfile`:
-```dockerfile
-FROM openjdk:17-jdk-slim as build
-COPY target/*.jar PagPasse-0.0.1-SNAPSHOT.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/PagPasse-0.0.1-SNAPSHOT.jar"]
 ```
 
 ## 🔧 Ferramentas de Build
