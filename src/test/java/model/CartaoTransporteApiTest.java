@@ -1,3 +1,4 @@
+
 package model;
 
 import io.restassured.RestAssured;
@@ -7,21 +8,24 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
-import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.equalTo;
 
+@Testcontainers
 class CartaoTransporteApiTest {
 
     @Container
-    static GenericContainer<?> app = new GenericContainer<>("perimneto/pagpasseci-app:latest")
-            .withExposedPorts(8080);
+    static GenericContainer<?> app = new GenericContainer<>("pagpasseci-app:latest")
+            .withExposedPorts(8080)
+            .waitingFor(Wait.forHttp("/api/cartao-transporte/ping").forStatusCode(200))
+            .withEnv("SPRING_PROFILES_ACTIVE", "test");;
 
     @BeforeAll
     static void setup() {
-        app.start();
+        Integer mappedPort = app.getMappedPort(8080);
         RestAssured.baseURI = "http://localhost";
-        RestAssured.port = app.getMappedPort(8080);
+        RestAssured.port = mappedPort;
     }
 
     @Test
@@ -37,9 +41,7 @@ class CartaoTransporteApiTest {
         """;
 
         RestAssured.given()
-                .auth()
-                .preemptive()
-                .basic("user", "password")
+                .auth().preemptive().basic("user", "password")
                 .contentType(ContentType.JSON)
                 .body(requestBody)
                 .when()
@@ -47,10 +49,8 @@ class CartaoTransporteApiTest {
                 .then()
                 .statusCode(200)
                 .body("numeroCartao", equalTo(1234567890))
-                .body(matchesJsonSchemaInClasspath("schemas/CartaoTransporteSchema.json"));
-
-        System.out.println("===== LOG CONTAINER =====");
-        System.out.println(app.getLogs());
-        System.out.println("=========================");
+                .body("tipoCartao", equalTo("Comum"))
+                .body("saldoCartao", equalTo(50.0F))
+                .body("dataEmissao", equalTo("2024-04-01"));
     }
 }
