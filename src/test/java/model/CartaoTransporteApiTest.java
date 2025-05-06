@@ -14,13 +14,14 @@ import static org.hamcrest.Matchers.*;
 class CartaoTransporteApiTest {
 
     @Container
-    static GenericContainer<?> app = new GenericContainer<>("eclipse-temurin:21-jdk-jammy")
+    static GenericContainer<?> app = new GenericContainer<>("perimneto/pagpasseci-app:latest")
             .withExposedPorts(8080);
 
     @BeforeAll
     static void setup() {
+        app.start();
         RestAssured.baseURI = "http://localhost";
-        RestAssured.port = 8080;
+        RestAssured.port = app.getMappedPort(8080);
     }
 
     @Test
@@ -47,5 +48,9 @@ class CartaoTransporteApiTest {
                 .statusCode(200)
                 .body("numeroCartao", equalTo(1234567890))
                 .body(matchesJsonSchemaInClasspath("schemas/CartaoTransporteSchema.json"));
+
+        System.out.println("===== LOG CONTAINER =====");
+        System.out.println(app.getLogs());
+        System.out.println("=========================");
     }
 }
