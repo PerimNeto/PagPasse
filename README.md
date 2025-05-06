@@ -28,8 +28,8 @@ PagPasse é uma aplicação inovadora voltada para o transporte público em cida
 ### Clone o Repositório
 
 ```bash
-git clone https://github.com/OBuskas/pagpasse.git
-cd pagpasse
+git clone https://github.com/PerimNeto/PagPasse.git
+cd PagPasse
 ```
 
 ### Configuração do Banco de Dados
@@ -235,8 +235,7 @@ O projeto utiliza Maven como ferramenta de build, com configurações definidas 
 
 Para questões, sugestões ou problemas, abra uma Issue no GitHub ou entre em contato através de:
 
-- Email: [lucas.barbosa12397@gmail.com]
-- Website: [https://bento.me/lucasbarbosa]
+- Email: [perimtecart@gmail.com]
 
 ## 📈 Roadmap de Desenvolvimento
 
