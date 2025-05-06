@@ -1,21 +1,29 @@
 package model;
 
-
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 import static org.hamcrest.Matchers.*;
 
+@Testcontainers
 public class CartaoTransporteApiTest {
-    private static String BASE_URL = System.getProperty("app.url", "http://localhost:8080");
 
-    @BeforeEach
-    void setup() {
-        RestAssured.baseURI = BASE_URL;
+    @Container
+    static GenericContainer<?> app = new GenericContainer<>("eclipse-temurin:21-jdk-jammy")
+            .withExposedPorts(8080);
+
+    @BeforeAll
+    static void setup() {
+        Integer mappedPort = app.getMappedPort(8080);
+        RestAssured.baseURI = "http://localhost";
+        RestAssured.port = mappedPort;
     }
 
     @Test
@@ -44,4 +52,3 @@ public class CartaoTransporteApiTest {
                 .body(matchesJsonSchemaInClasspath("schemas/CartaoTransporteSchema.json"));
     }
 }
-
